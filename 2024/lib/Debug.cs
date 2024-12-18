@@ -1,11 +1,8 @@
-
-using System.Diagnostics.Contracts;
-
 namespace AdventOfCode
 {
-    public class MatrixUtils
+    public class Debug
     {
-        public static void Print<T>(Func<int, int, T> GetItem, int rows, int columns, string separator = "")
+        public static void PrintMatrix<T>(Func<int, int, T> GetItem, int rows, int columns, string separator = "")
             where T : notnull
         {
             for (int i = 0; i < rows; i++)
@@ -16,10 +13,10 @@ namespace AdventOfCode
             }
         }
 
-        public static void Print<T>(T[,] matrix, string separator = "")
+        public static void PrintMatrix<T>(T[,] matrix, string separator = "")
             where T : notnull
         {
-            Print(
+            PrintMatrix(
                 (int x, int y) => matrix[x, y],
                 matrix.GetLength(0),
                 matrix.GetLength(1),
@@ -27,10 +24,10 @@ namespace AdventOfCode
             );
         }
 
-        public static void Print<T>(T[][] matrix, string separator = "")
+        public static void PrintMatrix<T>(T[][] matrix, string separator = "")
             where T : notnull
         {
-            Print(
+            PrintMatrix(
                 (int x, int y) => matrix[x][y],
                 matrix.Length,
                 matrix[0].Length,
