@@ -7,67 +7,36 @@ public class Solution
     static Vec2 Down = (1, 0);
     static Vec2 Left = (0, -1);
     readonly Vec2[] Dirs = [Up, Down, Left, Right];
+    static readonly int Width = 71;
+    static readonly int Height = 71;
+    static readonly Vec2 Start = (0, 0);
+    static readonly Vec2 End = (Width - 1, Height - 1);
 
     public object PartOne(string input)
     {
-        var w = 71;
-        var h = 71;
-        var amount = 1024;
-        var corrupted = input.Split("\n")
-            .Select(line => line.Split(",").Select(int.Parse).ToArray())
-            .Select(coord => new Vec2(coord[0], coord[1]))
-            .Take(amount)
-            .ToHashSet();
-        var map = (
-            from x in Enumerable.Range(0, w)
-            from y in Enumerable.Range(0, h)
-            let value = corrupted.Contains((x, y)) ? '#' : '.'
-            select new KeyValuePair<Vec2, char>((x, y), value)
-        ).ToDictionary();
+        var corrupted = Parse(input);
+        var map = MakeMap(corrupted.Take(1024));
 
-        // Debug.PrintMatrix(
-        //     (x, y) => map.GetValueOrDefault((y, x), '.'),
-        //     7,
-        //     7
-        // );
-
-        Vec2 start = (0, 0);
-        Vec2 end = (w - 1, h - 1);
-
-        return Bfs(map, start, end);
+        return Bfs(map, Start, End);
     }
 
     public object PartTwo(string input)
     {
-        var w = 71;
-        var h = 71;
-        Vec2 start = (0, 0);
-        Vec2 end = (w - 1, h - 1);
-        var corruptedLst = input.Split("\n")
-            .Select(line => line.Split(",").Select(int.Parse).ToArray())
-            .Select(coord => new Vec2(coord[0], coord[1]))
-            .ToList();
+        var corrupted = Parse(input);
+        var amount = 1025;
 
-        for (int amount = 1024; amount < 1000000; amount++)
+        for (; amount <= corrupted.Length; amount++)
         {
-            var corrupted = corruptedLst.Take(amount).ToHashSet();
-            var map = (
-                from x in Enumerable.Range(0, w)
-                from y in Enumerable.Range(0, h)
-                let value = corrupted.Contains((x, y)) ? '#' : '.'
-                select new KeyValuePair<Vec2, char>((x, y), value)
-            ).ToDictionary();
-            var steps = Bfs(map, start, end);
+            var map = MakeMap(corrupted.Take(amount));
+            var steps = Bfs(map, Start, End);
 
             if (steps == -1)
-            {
-                var pos = corruptedLst.Take(amount).Last();
-
-                return $"{pos.X},{pos.Y}";
-            }
+                break;
         }
 
-        throw new Exception("not found");
+        var pos = corrupted[amount];
+
+        return $"{pos.X},{pos.Y}";
     }
 
     int Bfs(Dictionary<Vec2, char> map, Vec2 start, Vec2 end)
@@ -104,4 +73,23 @@ public class Solution
 
         return -1;
     }
+
+    Dictionary<Vec2, char> MakeMap(IEnumerable<Vec2> corrupted)
+    {
+        var corruptedSet = corrupted.ToHashSet();
+
+        return (
+            from x in Enumerable.Range(0, Width)
+            from y in Enumerable.Range(0, Height)
+            let value = corruptedSet.Contains((x, y)) ? '#' : '.'
+            select new KeyValuePair<Vec2, char>((x, y), value)
+        ).ToDictionary();
+    }
+
+
+    Vec2[] Parse(string input) =>
+        input.Split("\n")
+            .Select(line => line.Split(",").Select(int.Parse).ToArray())
+            .Select(nums => new Vec2(nums[0], nums[1]))
+            .ToArray();
 }

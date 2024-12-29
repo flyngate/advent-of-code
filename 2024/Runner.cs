@@ -9,10 +9,10 @@ enum InputType
 class Runner
 {
 
-    public static void Main(string[] args)
+    public static void Main()
     {
         var input = ReadInput(InputType.Sample);
-        var result = new Day18.Solution().PartOne(input);
+        var result = new Day23.Solution().PartOne(input);
 
         Console.WriteLine(result);
     }

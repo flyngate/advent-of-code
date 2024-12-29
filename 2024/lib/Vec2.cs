@@ -1,4 +1,3 @@
-
 namespace AdventOfCode;
 
 public record struct Vec2(int X, int Y)
